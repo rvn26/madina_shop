@@ -15,7 +15,7 @@
         <div id="top-bar" class="flex justify-between items-center px-4 mt-[60px]">
             <img src="{{asset('assets/images/logos/logo.svg')}}" class="flex shrink-0" alt="logo">
             <div class="flex gap-4">
-                @auth
+                @if(Auth::guard('customer')->check())
                     <form action="{{ route('customer.logout') }}" method="POST">
                         @csrf
                         <button type="submit" class="p-2 rounded-full font-bold border bg-[#C5F277] border-[#C5F277]">
@@ -27,7 +27,7 @@
                         class="p-2 rounded-full font-bold border bg-[#C5F277] border-[#C5F277]">
                         login
                     </a>
-                @endauth
+                @endif
 
                 <a href="#">
                     <img src="{{asset('assets/images/icons/notification.svg')}}" class="w-10 h-10" alt="icon">
@@ -89,7 +89,7 @@
 
                     @forelse ($popularProducts as $itemPopularProduct)
                         <div class="swiper-slide !w-fit py-[2px]">
-                            @auth
+                            @if(Auth::guard('customer')->check())
                                 <a href="{{route('front.details', $itemPopularProduct->slug)}}">
                                     <div
                                         class="flex flex-col shrink-0 w-[230px] h-full rounded-3xl gap-[14px] p-[10px] pb-4 bg-white transition-all duration-300 hover:ring-2 hover:ring-[#FFC700]">
@@ -141,7 +141,7 @@
                                         </div>
                                     </div>
                                 </a>
-                            @endauth
+                            @endif
 
                         </div>
                     @empty
@@ -161,7 +161,7 @@
             <div class="flex flex-col gap-4 ">
 
                 @forelse ($newProducts as $itemNewProduct)
-                    @auth
+                    @if(Auth::guard('customer')->check())
                         <a href="{{route('front.details', $itemNewProduct->slug)}}">
                             <div
                                 class="flex items-center rounded-3xl p-[10px_16px_16px_10px] gap-[14px] bg-white transition-all duration-300 hover:ring-2 hover:ring-[#FFC700]">
@@ -226,7 +226,7 @@
                             </div>
                         </a>
 
-                    @endauth
+                    @endif
 
                 @empty
 
@@ -245,7 +245,7 @@
                             <span class="font-bold text-sm leading-[21px]">Browse</span>
                         </div>
                     </a>
-                    @auth
+                    @if(Auth::guard('customer')->check())
                         <a href="{{route('cart.index')}}" class="mx-auto w-full">
                             <img src="{{asset('assets/images/icons/bag-2-white.svg')}}" class="w-6 h-6" alt="icon">
                         </a>
@@ -265,7 +265,7 @@
                         <a href="{{route('customer.auth.login')}}" class="mx-auto w-full">
                             <img src="{{asset('assets/images/icons/24-support-white.svg')}}" class="w-6 h-6" alt="icon">
                         </a>
-                    @endauth
+                    @endif
 
                 </div>
             </nav>
