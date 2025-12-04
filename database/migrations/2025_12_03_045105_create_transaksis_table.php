@@ -17,7 +17,7 @@ return new class extends Migration
             $table->bigInteger('order_id')->unsigned();
             $table->enum('status', ['berhasil', 'menunggu', 'dibatalkan'])->default('menunggu');
             $table->string('snap_token')->nullable();
-            $table->foreign('customer_id')->references('id')->on('customer')->onDelete('cascade');
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->timestamps();
         });
