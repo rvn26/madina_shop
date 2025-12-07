@@ -7,7 +7,8 @@ cmds = [
     "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
     "cp /assets/supervisord.conf /etc/supervisord.conf",
     "chmod +x /assets/start.sh",
-    "...",
+    "mkdir -p /app/storage/logs",
+    "mkdir -p /app/bootstrap/cache",
     "chown -R www-data:www-data /app",
     "find /app -type d -exec chmod 755 {} \\;",
     "find /app -type f -exec chmod 644 {} \\;",
@@ -15,18 +16,25 @@ cmds = [
 ]
 
 [start]
-cmd = '/assets/start.sh'
+cmd = "/assets/start.sh"
 
 [staticAssets]
+
 "start.sh" = '''
 #!/bin/bash
 
-php /app/artisan key:generate
+echo "Fixing Laravel permissions..."
+mkdir -p /app/storage/logs
+mkdir -p /app/bootstrap/cache
+chown -R www-data:www-data /app/storage /app/bootstrap/cache
+chmod -R 775 /app/storage /app/bootstrap/cache
 
+php /app/artisan key:generate
 php /app/artisan storage:link
 
 node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf
 
+echo "Starting supervisord..."
 supervisord -c /etc/supervisord.conf -n
 '''
 
@@ -57,6 +65,7 @@ files = /etc/supervisor/conf.d/*.conf
 
 "worker-nginx.conf" = '''
 [program:worker-nginx]
+user=www-data
 process_name=%(program_name)s_%(process_num)02d
 command=nginx -c /etc/nginx.conf
 autostart=true
@@ -67,6 +76,7 @@ stderr_logfile=/var/log/worker-nginx.log
 
 "worker-phpfpm.conf" = '''
 [program:worker-phpfpm]
+user=www-data
 process_name=%(program_name)s_%(process_num)02d
 command=php-fpm -y /assets/php-fpm.conf -F
 autostart=true
@@ -77,6 +87,7 @@ stderr_logfile=/var/log/worker-phpfpm.log
 
 "worker-laravel.conf" = '''
 [program:worker-laravel]
+user=www-data
 process_name=%(program_name)s_%(process_num)02d
 command=bash -c 'sleep 60; exec php /app/artisan queue:work --sleep=3 --tries=3 --max-time=3600'
 autostart=true
