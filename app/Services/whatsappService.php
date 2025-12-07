@@ -6,7 +6,7 @@ class WhatsAppService
 {
     public static function send($phone, $message)
     {
-        $token = 'ABvnPzSyTmHtyv8kHLVN';
+        $token = 'teh95EWTb8znDq7RoCNR';
 
         $curl = curl_init();
 

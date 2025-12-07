@@ -56,7 +56,7 @@ class User extends Authenticatable
     */
     public function canAccessPanel(Panel $panel): bool
     {
-        // dd('Dipanggil', $this->is_admin);
+        dd( $this->is_admin);
         return $this->is_admin ?? false;
     }
 
