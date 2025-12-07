@@ -1,57 +1,53 @@
 [phases.setup]
-nixPkgs = ["...", "python311Packages.supervisor", "nano", "less"]
+nixPkgs = [
+    "php81",
+    "php81Extensions.fpm",
+    "php81Extensions.redis",
+    "php81Extensions.mbstring",
+    "php81Extensions.tokenizer",
+    "php81Extensions.xml",
+    "php81Extensions.curl",
+    "php81Extensions.pdo",
+    "php81Extensions.pdo_mysql",
+    "php81Extensions.fileinfo",
+    "nginx",
+    "nodejs_20",
+    "python311Packages.supervisor",
+    "nano",
+    "less"
+]
 
 [phases.build]
 cmds = [
     "mkdir -p /etc/supervisor/conf.d/",
+    "mkdir -p /var/log",
+    "chmod -R 775 /app/storage /app/bootstrap/cache",
+    "chown -R www-data:www-data /app",
     "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
     "cp /assets/supervisord.conf /etc/supervisord.conf",
-    "chmod +x /assets/start.sh",
-
-    # pastikan direktori ada
-    "mkdir -p /app/storage/logs",
-    "mkdir -p /app/bootstrap/cache",
-    "mkdir -p /app/public",
-
-    # set permission dasar
-    "chown -R www-data:www-data /app",
-    "find /app -type d -exec chmod 755 {} \\;",
-    "find /app -type f -exec chmod 644 {} \\;",
-
-    # khusus Laravel dirs
-    "chmod -R 775 /app/storage /app/bootstrap/cache",
+    "chmod +x /assets/start.sh"
 ]
 
 [start]
 cmd = "/assets/start.sh"
 
 [staticAssets]
-
 "start.sh" = '''
 #!/bin/bash
 
-echo "Fixing Laravel permissions..."
-
-mkdir -p /app/storage/logs
-mkdir -p /app/bootstrap/cache
-mkdir -p /app/public
-
-# Owner & Permission benar untuk Laravel + nginx
-chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/public
+# Fix permissions
+chown -R www-data:www-data /app/storage /app/bootstrap/cache
 chmod -R 775 /app/storage /app/bootstrap/cache
-chmod -R 755 /app/public
 
-# Pastikan index.php bisa dibaca
-chmod 644 /app/public/index.php 2>/dev/null || true
-
-php /app/artisan key:generate || true
+# Laravel setup
+php /app/artisan key:generate
 php /app/artisan storage:link || true
 
-# Generate nginx config
+# Replace nginx template
 node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf
 
-echo "Starting supervisord..."
-supervisord -c /etc/supervisord.conf -n
+# Start Supervisor (manages nginx, php-fpm, queue workers)
+supervisord -n -c /etc/supervisord.conf
 '''
 
 "supervisord.conf" = '''
@@ -60,14 +56,8 @@ file=/assets/supervisor.sock
 
 [supervisord]
 logfile=/var/log/supervisord.log
-logfile_maxbytes=50MB
-logfile_backups=10
-loglevel=info
 pidfile=/assets/supervisord.pid
 nodaemon=false
-silent=false
-minfds=1024
-minprocs=200
 
 [rpcinterface:supervisor]
 supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
@@ -81,8 +71,6 @@ files = /etc/supervisor/conf.d/*.conf
 
 "worker-nginx.conf" = '''
 [program:worker-nginx]
-user=www-data
-process_name=%(program_name)s_%(process_num)02d
 command=nginx -c /etc/nginx.conf
 autostart=true
 autorestart=true
@@ -92,9 +80,7 @@ stderr_logfile=/var/log/worker-nginx.log
 
 "worker-phpfpm.conf" = '''
 [program:worker-phpfpm]
-user=www-data
-process_name=%(program_name)s_%(process_num)02d
-command=php-fpm -y /assets/php-fpm.conf -F
+command=/nix/store/*/bin/php-fpm -y /assets/php-fpm.conf -F
 autostart=true
 autorestart=true
 stdout_logfile=/var/log/worker-phpfpm.log
@@ -103,88 +89,56 @@ stderr_logfile=/var/log/worker-phpfpm.log
 
 "worker-laravel.conf" = '''
 [program:worker-laravel]
-user=www-data
-process_name=%(program_name)s_%(process_num)02d
-command=bash -c 'sleep 60; exec php /app/artisan queue:work --sleep=3 --tries=3 --max-time=3600'
+command=bash -c 'sleep 10; php /app/artisan queue:work --sleep=3 --tries=3'
 autostart=true
 autorestart=true
 stopasgroup=true
 killasgroup=true
-numprocs=8
-startsecs=0
-stopwaitsecs=3600
 stdout_logfile=/var/log/worker-laravel.log
 stderr_logfile=/var/log/worker-laravel.log
 '''
 
 "php-fpm.conf" = '''
+[global]
+daemonize = no
+
 [www]
 listen = 127.0.0.1:9000
 user = www-data
 group = www-data
-listen.owner = www-data
-listen.group = www-data
 pm = dynamic
-pm.max_children = 50
-pm.min_spare_servers = 4
-pm.max_spare_servers = 32
-pm.start_servers = 18
+pm.max_children = 20
+pm.start_servers = 4
+pm.min_spare_servers = 2
+pm.max_spare_servers = 10
 clear_env = no
 '''
 
 "nginx.template.conf" = '''
-user www-data www-data;
-worker_processes 5;
+user www-data;
+worker_processes auto;
 daemon off;
 
-worker_rlimit_nofile 8192;
-
 events {
-    worker_connections  4096;
+    worker_connections 1024;
 }
 
 http {
-    include     $!{nginx}/conf/mime.types;
-    index       index.html index.htm index.php;
-
-    default_type application/octet-stream;
-    access_log /var/log/nginx-access.log;
-    error_log /var/log/nginx-error.log;
-    sendfile on;
-    tcp_nopush on;
-    server_names_hash_bucket_size 128;
-
+    include $!{nginx}/conf/mime.types;
     server {
         listen ${PORT};
-        listen [::]:${PORT};
-        server_name localhost;
-
-        # FIX — root nginx harus langsung ke /app/public
         root /app/public;
 
-        add_header X-Content-Type-Options "nosniff";
-        client_max_body_size 35M;
-
         index index.php;
-        charset utf-8;
 
         location / {
             try_files $uri $uri/ /index.php?$query_string;
         }
 
-        location = /favicon.ico { access_log off; log_not_found off; }
-        location = /robots.txt  { access_log off; log_not_found off; }
-
-        error_page 404 /index.php;
-
         location ~ \.php$ {
             fastcgi_pass 127.0.0.1:9000;
-            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-
             include $!{nginx}/conf/fastcgi_params;
-            include $!{nginx}/conf/fastcgi.conf;
-
-            fastcgi_param PHP_VALUE "upload_max_filesize=30M \n post_max_size=35M";
+            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         }
 
         location ~ /\.(?!well-known).* {
