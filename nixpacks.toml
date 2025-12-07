@@ -7,11 +7,18 @@ cmds = [
     "cp /assets/worker-*.conf /etc/supervisor/conf.d/",
     "cp /assets/supervisord.conf /etc/supervisord.conf",
     "chmod +x /assets/start.sh",
+
+    # pastikan direktori ada
     "mkdir -p /app/storage/logs",
     "mkdir -p /app/bootstrap/cache",
+    "mkdir -p /app/public",
+
+    # set permission dasar
     "chown -R www-data:www-data /app",
     "find /app -type d -exec chmod 755 {} \\;",
     "find /app -type f -exec chmod 644 {} \\;",
+
+    # khusus Laravel dirs
     "chmod -R 775 /app/storage /app/bootstrap/cache",
 ]
 
@@ -24,14 +31,23 @@ cmd = "/assets/start.sh"
 #!/bin/bash
 
 echo "Fixing Laravel permissions..."
+
 mkdir -p /app/storage/logs
 mkdir -p /app/bootstrap/cache
-chown -R www-data:www-data /app/storage /app/bootstrap/cache
+mkdir -p /app/public
+
+# Owner & Permission benar untuk Laravel + nginx
+chown -R www-data:www-data /app/storage /app/bootstrap/cache /app/public
 chmod -R 775 /app/storage /app/bootstrap/cache
+chmod -R 755 /app/public
 
-php /app/artisan key:generate
-php /app/artisan storage:link
+# Pastikan index.php bisa dibaca
+chmod 644 /app/public/index.php 2>/dev/null || true
 
+php /app/artisan key:generate || true
+php /app/artisan storage:link || true
+
+# Generate nginx config
 node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf
 
 echo "Starting supervisord..."
@@ -132,13 +148,10 @@ http {
     index       index.html index.htm index.php;
 
     default_type application/octet-stream;
-    log_format  main '$remote_addr - $remote_user [$time_local]  $status '
-        '"$request" $body_bytes_sent "$http_referer" '
-        '"$http_user_agent" "$http_x_forwarded_for"';
     access_log /var/log/nginx-access.log;
     error_log /var/log/nginx-error.log;
-    sendfile    on;
-    tcp_nopush    on;
+    sendfile on;
+    tcp_nopush on;
     server_names_hash_bucket_size 128;
 
     server {
@@ -146,48 +159,34 @@ http {
         listen [::]:${PORT};
         server_name localhost;
 
-        $if(NIXPACKS_PHP_ROOT_DIR) (
-            root ${NIXPACKS_PHP_ROOT_DIR};
-        ) else (
-            root /app/public; 
-        )
+        # FIX — root nginx harus langsung ke /app/public
+        root /app/public;
 
         add_header X-Content-Type-Options "nosniff";
-
         client_max_body_size 35M;
-      
+
         index index.php;
-      
         charset utf-8;
-      
-        $if(IS_LARAVEL) (
-            location / {
-                try_files $uri $uri/ /index.php?$query_string;
-            }
-        ) else ()
-        
-        $if(NIXPACKS_PHP_FALLBACK_PATH) (
-          location / {
-            try_files $uri $uri/ ${NIXPACKS_PHP_FALLBACK_PATH}?$query_string;
-          }
-        ) else ()
-      
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
         location = /favicon.ico { access_log off; log_not_found off; }
         location = /robots.txt  { access_log off; log_not_found off; }
-      
-        $if(IS_LARAVEL) (
-            error_page 404 /index.php;
-        ) else ()
-      
+
+        error_page 404 /index.php;
+
         location ~ \.php$ {
             fastcgi_pass 127.0.0.1:9000;
             fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+
             include $!{nginx}/conf/fastcgi_params;
             include $!{nginx}/conf/fastcgi.conf;
 
             fastcgi_param PHP_VALUE "upload_max_filesize=30M \n post_max_size=35M";
         }
-      
+
         location ~ /\.(?!well-known).* {
             deny all;
         }
