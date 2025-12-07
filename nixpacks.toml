@@ -43,7 +43,7 @@ chmod -R 775 /app/storage /app/bootstrap/cache
 php /app/artisan key:generate
 php /app/artisan storage:link || true
 
-# Replace nginx template
+# Replace nginx template (assuming prestart.mjs handles $!{nginx} and ${PORT} variables)
 node /assets/scripts/prestart.mjs /assets/nginx.template.conf /etc/nginx.conf
 
 # Start Supervisor (manages nginx, php-fpm, queue workers)
@@ -90,6 +90,7 @@ stderr_logfile=/var/log/worker-phpfpm.log
 "worker-laravel.conf" = '''
 [program:worker-laravel]
 command=bash -c 'sleep 10; php /app/artisan queue:work --sleep=3 --tries=3'
+numprocs=2  # Added based on the log (worker-laravel_06, worker-laravel_07)
 autostart=true
 autorestart=true
 stopasgroup=true
