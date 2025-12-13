@@ -38,16 +38,6 @@ class FrontController extends Controller
         $category = $product->category;
         return view('front.details', compact('product', 'category'));
     }
-    public function produk(Product $product)
-    {
-        $data = $this->frontService->getFrontPageData();
-        return view('front.produk', $data);
-    }
-    public function allcategory(Product $product)
-    {
-        $data = $this->frontService->getFrontPageData();
-        return view('front.allcategory', $data);
-    }
 
     public function category(Category $category)
     {

@@ -9,17 +9,12 @@ use App\Http\Controllers\FrontController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [FrontController::class, 'index'])->name('front.index');
-Route::get('/test', function () {
-    return view('welcome');
-})->name('test');
 
 Route::get('/search', [FrontController::class, 'search'])->name('front.search');
 
 Route::get('/browse/{category:slug}', [FrontController::class, 'category'])->name('front.category');
 
 Route::get('/details/{product:slug}', [FrontController::class, 'details'])->name('front.details');
-Route::get('/produk', [FrontController::class, 'produk'])->name('produk');
-Route::get('/category', [FrontController::class, 'allcategory'])->name('category');
 
 // Route::get('/check-booking', [OrderController::class, 'checkBooking']) -> name('front.check_booking');
 // Route::post('/check-booking/details', [OrderController::class, 'checkBookingDetails']) -> name('front.check_booking_details');
@@ -79,7 +74,7 @@ Route::middleware(['auth:customer'])->group(function () {
 
     Route::post('/cart/add', [FrontController::class, 'addToCart'])->name('cart.add');
     Route::get('/cart', [FrontController::class, 'cart'])->name('cart.index');
-    
+
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
