@@ -1,79 +1,124 @@
-@extends('layout.app')
+<!DOCTYPE html>
+<html lang="en">
 
-@section('title', 'Login')
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Customer</title>
 
-@section('content')
-    <header class="flex items-center mb-20">
-        <div class="p-2 bg-primary-green/20 rounded-lg mr-3">
-            <svg class="w-6 h-6 text-[#0AA085]" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-            </svg>
-        </div>
-        <h1 class="text-xl font-semibold text-gray-800">Madinashop</h1>
-    </header>
-    <div class="min-h-screen flex flex-col items-center pt-10">
-
-        {{-- Login Box --}}
-        <div class="w-full max-w-md px-3">
-
-            <h2 class="text-3xl font-bold text-gray-800">Login</h2>
-            <p class="text-secondary-text text-sm mt-1 mb-6">Masukkan username anda</p>
-
-            {{-- Username --}}
-            <form action="{{ route('customer.auth.login') }}" method="POST" id="loginForm">
-                @csrf
-                <label for="email" class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
-                <input type="email" id="email" name="email"
-                    class="w-full bg-white rounded-full py-3 px-5 text-gray-700 shadow-sm border border-gray-200 focus:ring-primary-green focus:ring-2 outline-none"
-                    placeholder="Masukkan email anda">
-
-                {{-- Password --}}
-                <label for="password" class="block text-sm font-semibold text-gray-700 mt-5 mb-1">Password</label>
-                <div class="relative">
-                    <input type="password" id="password" name="password"
-                        class="w-full bg-white rounded-full py-3 px-5 text-gray-700 shadow-sm border border-gray-200 focus:ring-primary-green focus:ring-2 outline-none"
-                        placeholder="Masukkan password anda">
-
-                </div>
-
-                {{-- Forget --}}
-                <div class="text-right mt-2 mb-5">
-                    <a href="#"
-                        class="text-secondary-text text-sm hover:text-primary-green">Lupa Password?</a>
-                </div>
-
-                {{-- Login Button --}}
-                <button id="loginBtn" type="submit"
-                    class="w-full py-3 bg-gray-300 text-white rounded-full text-lg font-medium cursor-not-allowed">
-                    Login
-                </button>
-            </form>
-            {{-- Register --}}
-            <p class="text-center mt-4 text-secondary-text text-sm">
-                Belum punya akun?
-                <a href="{{ route('customer.auth.register') }}" class="text-[#0AA085] font-semibold">Daftar</a>
-            </p>
-        </div>
-
-    </div>
-    <script>
-        const username = document.getElementById("email");
-        const password = document.getElementById("password");
-        const loginBtn = document.getElementById("loginBtn");
-
-        function toggleButton() {
-            if (username.value.trim() !== "" && password.value.trim() !== "") {
-                loginBtn.classList.remove("bg-gray-300", "cursor-not-allowed");
-                loginBtn.classList.add("bg-[#0AA085]", "cursor-pointer");
-            } else {
-                loginBtn.classList.add("bg-gray-300", "cursor-not-allowed");
-                loginBtn.classList.remove("bg-[#0AA085]", "cursor-pointer");
-            }
+    <style>
+        body {
+            font-family: "Poppins", Arial, sans-serif;
+            background: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        username.addEventListener("input", toggleButton);
-        password.addEventListener("input", toggleButton);
-    </script>
-@endsection
+        .login-box {
+            width: 380px;
+            background: white;
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px  0 12px 12px ;
+            margin-top: 6px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            border-color: #0077ff;
+            box-shadow: 0 0 5px rgba(0, 119, 255, 0.4);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #0077ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #005fd4;
+        }
+
+        .register-link {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #005fd4;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-box">
+        <h2>Login Customer</h2>
+
+        <form action="{{ route('customer.auth.login') }}" method="POST">
+            @csrf
+
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Masukkan email" required>
+
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Masukkan password" required>
+
+            <button type="submit">Masuk</button>
+        </form>
+
+        <p class="register-link">
+            Belum punya akun?  
+            <a href="{{ route('customer.auth.register') }}">Daftar</a>
+        </p>
+    </div>
+
+</body>
+
+</html>

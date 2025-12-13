@@ -99,7 +99,6 @@
 
                 },
                 onError: function (result) {
-                    window.location.href = "{{ route('front.index') }}";
                     alert("Pembayaran gagal. Silakan coba lagi.");
                     
                 }
