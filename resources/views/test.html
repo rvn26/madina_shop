@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madinashop - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Konfigurasi warna kustom (opsional, untuk mendekati warna background)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Warna dasar background dari gambar (putih gading/creamy)
+                        'custom-bg': '#f9f9f5', 
+                        // Warna utama untuk tombol dan ikon (hijau sage/mint)
+                        'primary-green': '#86a89e',
+                        // Warna teks sekunder
+                        'secondary-text': '#737373',
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Gaya kustom untuk memastikan font konsisten atau jika CDN default tidak cukup */
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+    </style>
+</head>
+<body class="bg-custom-bg min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-sm">
+        <header class="flex items-center mb-8">
+            <div class="p-2 bg-primary-green/20 rounded-lg mr-3">
+                <svg class="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+            </div>
+            <h1 class="text-xl font-semibold text-gray-800">Madinashop</h1>
+        </header>
+
+        <section>
+            <h2 class="text-4xl font-semibold mb-1 text-gray-900">Login</h2>
+            <p class="text-secondary-text mb-8">Masukkan username anda</p>
+
+            <form action="#" method="POST" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-800 mb-1">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Masukkan username anda" 
+                        class="w-full p-4 border border-gray-200 rounded-xl focus:ring-1 focus:ring-primary-green focus:border-primary-green/50 placeholder-secondary-text/80 text-gray-700 transition duration-150 ease-in-out"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-800 mb-1">Password</label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Masukkan password anda" 
+                            class="w-full p-4 border border-gray-200 rounded-xl focus:ring-1 focus:ring-primary-green focus:border-primary-green/50 placeholder-secondary-text/80 text-gray-700 transition duration-150 ease-in-out pr-12"
+                            required
+                        >
+                        <button type="button" class="absolute inset-y-0 right-0 flex items-center px-4 text-secondary-text hover:text-gray-900 transition duration-150">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.022 10.022 0 0112 19c-4.478 0-8.268-2.943-9.543-7.25c.196-.445.437-.872.72-1.282M15.42 15.42L18 12c-1.275-4.307-5.065-7.25-9.543-7.25C6.11 4.75 3.328 6.136 1.75 8.25m8.536 8.536c-.476.104-.973.164-1.486.164-2.553 0-4.62-2.067-4.62-4.62s2.067-4.62 4.62-4.62 4.62 2.067 4.62 4.62c0 .513-.06 1.01-.164 1.486L20.25 21l-1.06 1.06-8.536-8.536z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end pt-0">
+                    <a href="#" class="text-sm font-medium text-gray-800 hover:text-primary-green transition duration-150">Lupa Password?</a>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full py-4 text-lg font-semibold text-white bg-gray-300 rounded-xl shadow-md hover:bg-gray-400 transition duration-150 ease-in-out"
+                >
+                    Login
+                </button>
+            </form>
+
+            <div class="text-center mt-6 text-gray-700">
+                Belum punya akun? 
+                <a href="#" class="font-semibold text-primary-green hover:text-green-700 transition duration-150">Daftar</a>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
