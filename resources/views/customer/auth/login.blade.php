@@ -3,7 +3,7 @@
 @section('title', 'Login')
 
 @section('content')
-    <header class="flex items-center mb-20">
+    <header class="flex items-center mb-20 mt-5">
         <div class="p-2 bg-primary-green/20 rounded-lg mr-3">
             <svg class="w-6 h-6 text-[#0AA085]" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">

@@ -3,7 +3,7 @@
 @section('title', 'Madinashop')
 
 @section('content')
-    <div class="min-h-screen bg-[#F4F5F1] px-4 pb-24">
+    <div class="min-h-screen bg-[#F4F5F1] px-4 py-4 pb-24">
 
         {{-- Pencarian --}}
         <form action="{{route('front.search')}}" class="flex justify-between items-center mx-auto">

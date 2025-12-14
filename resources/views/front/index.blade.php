@@ -3,7 +3,7 @@
 @section('title', 'Madinashop')
 
 @section('content')
-    <div class="min-h-screen bg-custom-bg px-4 pb-24">
+    <div class="min-h-screen bg-[#F4F5F1] px-4 pb-24">
 
         {{-- HEADER --}}
         <header class="pt-6 mb-4">
@@ -18,25 +18,33 @@
                 </h1>
 
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('cart.index') }}" class="p-2 bg-white rounded-full shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-shopping-cart-icon lucide-shopping-cart">
-                            <circle cx="8" cy="21" r="1" />
-                            <circle cx="19" cy="21" r="1" />
-                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-                        </svg>
-                    </a>
+                    @if(Auth::guard('customer')->check())
+                        <a href="{{ route('cart.index') }}" class="p-2 bg-white rounded-full shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="lucide lucide-shopping-cart-icon lucide-shopping-cart">
+                                <circle cx="8" cy="21" r="1" />
+                                <circle cx="19" cy="21" r="1" />
+                                <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                            </svg>
+                        </a>
 
-                    <a href="#" class="p-2 bg-white rounded-full shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-bell-icon lucide-bell">
-                            <path d="M10.268 21a2 2 0 0 0 3.464 0" />
-                            <path
-                                d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
-                        </svg>
-                    </a>
+                        <a href="#" class="p-2 bg-white rounded-full shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                class="lucide lucide-bell-icon lucide-bell">
+                                <path d="M10.268 21a2 2 0 0 0 3.464 0" />
+                                <path
+                                    d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
+                            </svg>
+                        </a>
+                    @else
+                        <a href="{{ route('customer.auth.login') }}"
+                            class="p-2 px-5 rounded-full font-bold border bg-[#0AA085] text-white border-[#0AA085]">
+                            login
+                        </a>
+                    @endif
+
                 </div>
             </div>
         </header>
@@ -102,7 +110,7 @@
         <div class="grid grid-cols-2 gap-4">
             {{-- CARD PRODUK --}}
             @foreach ($newProducts as $item)
-                 <a href="{{route('front.details', $item->slug)}}">
+                <a href="{{route('front.details', $item->slug)}}">
                     <form action="{{ route('cart.add') }}" method="POST">
                         @csrf
                         <input type="hidden" name="product_id" value="{{$item->id}}">

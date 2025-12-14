@@ -108,7 +108,7 @@
     </div>
 
     @if (session('success'))
-        <div id="toast-success" class="fixed top-6 w-screen left-1/2 -translate-x-1/2 z-[999] flex items-center gap-4  bg-white text-white px-5 py-3 rounded-full shadow-xl animate-toast-down">
+        <div id="toast-success" class="fixed top-6 w-3/4 max-w-sm left-1/2 -translate-x-1/2 z-[999] flex items-center gap-4  bg-white text-white px-5 py-3 rounded-full shadow-xl animate-toast-down">
 
             {{-- Icon --}}
             <div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#0AA085]/20">

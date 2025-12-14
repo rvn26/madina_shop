@@ -13,6 +13,10 @@ Route::get('/test', function () {
     return view('welcome');
 })->name('test');
 
+Route::get('/order.success', function () {
+    return view('front.orders.ordersukses');
+})->name('order.success');
+
 Route::get('/search', [FrontController::class, 'search'])->name('front.search');
 
 Route::get('/browse/{category:slug}', [FrontController::class, 'category'])->name('front.category');
@@ -20,6 +24,7 @@ Route::get('/browse/{category:slug}', [FrontController::class, 'category'])->nam
 Route::get('/details/{product:slug}', [FrontController::class, 'details'])->name('front.details');
 Route::get('/produk', [FrontController::class, 'produk'])->name('produk');
 Route::get('/category', [FrontController::class, 'allcategory'])->name('category');
+
 
 // Route::get('/check-booking', [OrderController::class, 'checkBooking']) -> name('front.check_booking');
 // Route::post('/check-booking/details', [OrderController::class, 'checkBookingDetails']) -> name('front.check_booking_details');
@@ -57,6 +62,9 @@ Route::middleware(['auth:customer'])->group(function () {
     Route::get('/setup-profile', [CustomerProfileController::class, 'showSetupProfile'])
         ->name('customer.setupProfile');
 
+    Route::get('/datail-profile', [CustomerProfileController::class, 'showdatailProfile'])
+        ->name('customer.detail.profile');
+
     Route::post('/setup-profile', [CustomerProfileController::class, 'storeSetupProfile']);
 
     Route::get('/profile', [CustomerProfileController::class, 'showProfile'])
@@ -83,7 +91,9 @@ Route::middleware(['auth:customer'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
+
     Route::get('/orders', [CustomerOrderController::class, 'index'])->name('customer.orders');
+
 
     // Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])
     //     ->name('customer.orders.show');
