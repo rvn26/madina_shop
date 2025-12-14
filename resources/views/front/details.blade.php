@@ -86,12 +86,12 @@
                 </button>
             </div>
         </div>
-        <form action="{{ route('cart.add') }}" method="POST" class="flex flex-col gap-3 px-4">
+        <form action="{{ route('cart.add') }}" method="POST" class="flex flex-col ">
             @csrf
             <input type="hidden" name="product_id" value="{{$product->id}}">
             <input type="hidden" name="quantity" id="quantity" value="1">
             <div id="form-bottom-nav" class="relative flex h-[100px] w-full shrink-0 mt-5">
-                <div class="fixed bottom-5 w-full max-w-[340px] z-30 px-4">
+                <div class="fixed bottom-5 w-full max-w-md z-30 px-4">
                     <div class="flex items-center justify-between rounded-full bg-[#2A2A2A] p-[10px] pl-6">
                         <div class="flex flex-col gap-[2px]">
                             <p class="font-bold text-[20px] leading-[30px] text-white">Rp <span id="subtotal"

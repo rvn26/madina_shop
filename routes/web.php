@@ -86,13 +86,13 @@ Route::middleware(['auth:customer'])->group(function () {
     ->name('customer.logout');
 
     Route::post('/cart/add', [FrontController::class, 'addToCart'])->name('cart.add');
-    Route::get('/cart', [FrontController::class, 'cart'])->name('cart.index');
+    Route::get('/cart', [FrontController::class, 'cart'])->name('cart.index')->middleware('auth');
     
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 
 
-    Route::get('/orders', [CustomerOrderController::class, 'index'])->name('customer.orders');
+    Route::get('/orders', [CustomerOrderController::class, 'index'])->name('customer.orders')->middleware('auth');
 
 
     // Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])

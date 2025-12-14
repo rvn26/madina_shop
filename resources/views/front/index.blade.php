@@ -51,7 +51,7 @@
 
         {{-- Pencarian --}}
         <form action="{{route('front.search')}}" class="flex justify-between items-center mx-4">
-            <div class="flex items-center mb-6">
+            <div class="flex items-center mb-6 w-full max-w-md">
                 <div class="flex-grow bg-white rounded-l-full px-4 py-3 shadow-sm flex items-center gap-2">
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

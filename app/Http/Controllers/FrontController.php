@@ -41,7 +41,9 @@ class FrontController extends Controller
     public function produk(Product $product)
     {
         $data = $this->frontService->getFrontPageData();
-        return view('front.produk', $data);
+        $populerproduk = Product::where('is_popular','like',1)->latest()->get();
+        // dd($populerproduk);
+        return view('front.produk', $data,compact('populerproduk'));
     }
     public function allcategory(Product $product)
     {

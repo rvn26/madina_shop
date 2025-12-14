@@ -13,7 +13,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M11 5a6 6 0 100 12 6 6 0 000-12zM21 21l-4.35-4.35" />
                     </svg>
-                    <input type="text" placeholder="Cari produk favoritmu..."
+                    <input type="text" name="keyword" placeholder="Cari produk favoritmu..."
                         class="w-full bg-transparent outline-none text-gray-700">
                 </div>
 
@@ -22,16 +22,17 @@
                 </button>
             </div>
         </form>
-        <nav class="flex items-center justify-between pt-3 mb-2 border-b border-gray-700">
+
+        <nav class="flex items-center justify-between pt-3 mb-2 border-b border-gray-400">
             <div class="flex space-x-6">
-                <a href="#" class="font-semibold text-text-light border-b-2 border-primary-green pb-1">
+                <button id="btn-all" class="font-semibold text-gray-900 border-b-2 border-[#0AA085] pb-1">
                     Terbaru
-                </a>
-                <a href="#" class="font-medium text-gray-400 hover:text-text-light pb-1">
+                </button>
+                <button id="btn-populer" class="font-semibold text-gray-400  pb-1">
                     Bestseller
-                </a>
+                </button>
             </div>
-            <button class="text-gray-400 hover:text-text-light">
+            <button class="text-gray-400 hover:text-text-light ">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                     class="lucide lucide-funnel-icon lucide-funnel">
@@ -42,49 +43,101 @@
         </nav>
 
 
-        <div class="grid grid-cols-2 gap-4">
+        <div id="allshow" class="grid grid-cols-2 gap-4">
             {{-- CARD PRODUK --}}
-            <div class="bg-white p-4 rounded-xl shadow-sm">
-                
-                <img src="{{ asset('assets/images/thumbnails/image1.png') }}" class="w-full rounded-lg mb-3" alt="">
-                <h3 class="text-sm text-gray-700">Bebelac 3 Susu Pertumbuhan</h3>
-                <p class="text-[#0AA085] font-semibold text-sm mt-1">Rp 20.000</p>
-                <button class="mt-3 w-full bg-[#0AA085] text-white py-2 rounded-full text-sm font-medium">
-                    + Keranjang
-                </button>
-            </div>
-
-            <div class="bg-white p-4 rounded-xl shadow-sm">
-                <img src="{{ asset('assets/images/thumbnails/image1.png') }}" class="w-full rounded-lg mb-3" alt="">
-                <h3 class="text-sm text-gray-700">Bebelac 3 Susu Pertumbuhan</h3>
-                <p class="text-[#0AA085] font-semibold text-sm mt-1">Rp 20.000</p>
-                <button class="mt-3 w-full bg-[#0AA085] text-white py-2 rounded-full text-sm font-medium">
-                    + Keranjang
-                </button>
-            </div>
-
-            <div class="bg-white p-4 rounded-xl shadow-sm">
-                <img src="{{ asset('assets/images/thumbnails/image1.png') }}" class="w-full rounded-lg mb-3" alt="">
-                <h3 class="text-sm text-gray-700">Bebelac 3 Susu Pertumbuhan</h3>
-                <p class="text-[#0AA085] font-semibold text-sm mt-1">Rp 20.000</p>
-                <button class="mt-3 w-full bg-[#0AA085] text-white py-2 rounded-full text-sm font-medium">
-                    + Keranjang
-                </button>
-            </div>
-
-            <div class="bg-white p-4 rounded-xl shadow-sm">
-                <img src="{{ asset('assets/images/thumbnails/image1.png') }}" class="w-full rounded-lg mb-3" alt="">
-                <h3 class="text-sm text-gray-700">Bebelac 3 Susu Pertumbuhan</h3>
-                <p class="text-[#0AA085] font-semibold text-sm mt-1">Rp 20.000</p>
-                <button class="mt-3 w-full bg-[#0AA085] text-white py-2 rounded-full text-sm font-medium">
-                    + Keranjang
-                </button>
-            </div>
+            @foreach ($newProducts as $item)
+                <a href="{{route('front.details', $item->slug)}}">
+                    <form action="{{ route('cart.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{$item->id}}">
+                        <input type="hidden" name="quantity" id="quantity" value="1">
+                        <div class="bg-white p-4 rounded-xl shadow-sm">
+                            <img src="{{ asset('storage/' . $item->thumbnail) }}" class="w-full rounded-lg mb-3" alt="">
+                            <h3 class="text-sm text-gray-700">{{ $item->name }} <br> {{ $item->about }} </h3>
+                            <p class="text-[#0AA085] font-semibold text-sm mt-1">Rp.
+                                {{ number_format($item->price, 0, '.', '.') }}
+                            </p>
+                            <button type="submit"
+                                class="mt-3 w-full bg-[#0AA085] text-white py-2 rounded-full text-sm font-medium">
+                                + Keranjang
+                            </button>
+                        </div>
+                    </form>
+                </a>
+            @endforeach
         </div>
+        {{-- {{ dd($data) }} --}}
+        <div id="populershow" class="hidden grid grid-cols-2 gap-4">
+            {{-- CARD PRODUK --}}
+            @foreach ($populerproduk as $item)
+                <a href="{{route('front.details', $item->slug)}}">
+                    <form action="{{ route('cart.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{$item->id}}">
+                        <input type="hidden" name="quantity" id="quantity" value="1">
+                        <div class="bg-white p-4 rounded-xl shadow-sm">
+                            <img src="{{ asset('storage/' . $item->thumbnail) }}" class="w-full rounded-lg mb-3" alt="">
+                            <h3 class="text-sm text-gray-700">{{ $item->name }} <br> {{ $item->about }} </h3>
+                            <p class="text-[#0AA085] font-semibold text-sm mt-1">Rp.
+                                {{ number_format($item->price, 0, '.', '.') }}
+                            </p>
+                            <button type="submit"
+                                class="mt-3 w-full bg-[#0AA085] text-white py-2 rounded-full text-sm font-medium">
+                                + Keranjang
+                            </button>
+                        </div>
+                    </form>
+                </a>
+            @endforeach
+        </div>
+
 
     </div>
 
     {{-- BOTTOM NAV --}}
     @include('navbar.navbar')
+
+    <script>
+        const btnall = document.getElementById('btn-all');
+        const btnpopuler = document.getElementById('btn-populer');
+        const all = document.getElementById('allshow');
+        const populer = document.getElementById('populershow');
+
+        btnall.addEventListener('click', ()=>{
+            btnall.classList.add(
+                'text-text-light',
+                'border-b-2',
+                'border-[#0AA085]',
+                'text-gray-900'
+            )
+            btnpopuler.classList.remove(
+                'text-text-light',
+                'border-b-2',
+                'border-[#0AA085]',
+                'text-gray-900'
+            )
+            all.classList.remove('hidden')
+            populer.classList.add('hidden')
+        });
+        btnpopuler.addEventListener('click', ()=>{
+            btnall.classList.remove(
+                'text-text-light',
+                'border-b-2',
+                'border-[#0AA085]',
+                'text-gray-900',
+            )
+            btnall.classList.add(
+                'text-gray-400',
+            )
+            btnpopuler.classList.add(
+                'text-text-light',
+                'border-b-2',
+                'border-[#0AA085]',
+                'text-gray-900'
+            )
+            all.classList.add('hidden')
+            populer.classList.remove('hidden')
+        });
+    </script>
 
 @endsection

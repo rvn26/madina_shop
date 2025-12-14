@@ -89,7 +89,7 @@
         </section>
         @if($carts->count() > 0)
             <div id="bottom-nav" class="relative flex h-[100px] w-full shrink-0 mt-5">
-                <div class="fixed bottom-5 w-full max-w-sm z-30 px-4">
+                <div class="fixed bottom-5 w-full max-w-md z-30 px-4">
                     <div class="flex items-center justify-between rounded-full bg-[#2A2A2A] p-2 pl-6">
                         <div class="flex flex-col ">
                             <p class="text-sm  text-[#878785]">Total harga</p>
