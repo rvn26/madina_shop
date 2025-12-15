@@ -84,9 +84,11 @@
                     },
                     onPending: function (result) {
                         // Redirect juga jika pending
+                        window.location.href = "{{ route('customer.orders') }}";
 
                     },
                     onError: function (result) {
+                        window.location.href = "{{ route('front.index') }}";
                         alert("Pembayaran gagal. Silakan coba lagi.");
 
                     }

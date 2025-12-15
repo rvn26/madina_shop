@@ -142,7 +142,7 @@ class CheckoutController extends Controller
         // kosongkan cart customer
         Cart::where('customer_id', $customerId)->delete();
 
-        return redirect()->route('customer.orders')
+        return redirect()->route('order.success')
             ->with('success', 'Pesanan berhasil dibuat!');
     }
 }
