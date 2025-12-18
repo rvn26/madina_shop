@@ -27,64 +27,87 @@
             <!-- Card Transaksi -->
             <div id="all-section" class="flex flex-col gap-4">
                 @foreach ($allorder as $item)
-                    <a href="{{ route('orders.show', $item->id) }}">
-                        <div class="bg-white rounded-2xl p-4 shadow-sm space-y-4">
 
-                            <!-- Store -->
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10  rounded-xl flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-[#0AA085]" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="font-semibold text-sm">Madinashop</p>
-                                    @if ($item->status == 'processing')
-                                        <p class="text-xs text-orange-500">
-                                            Sedang disiapkan
-                                        </p>
-                                    @elseif($item->status == 'shipped')
-                                        <p class="text-xs text-orange-500">
-                                            Sedang dalam perjalanan
-                                        </p>
-                                    @elseif($item->status == 'completed')
-                                        <p class="text-xs text-orange-500">
-                                            pesanan selesai
-                                        </p>
-                                    @endif
+                    <div class="bg-white rounded-2xl p-4 shadow-sm space-y-4">
 
-                                </div>
+                        <!-- Store   -->
+                        <a href="{{ route('orders.show', $item->id) }}"></a>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10  rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-[#0AA085]" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                </svg>
                             </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-sm">Madinashop</p>
+                                @if ($item->status == 'processing')
+                                    <p class="text-xs text-orange-500">
+                                        Sedang disiapkan
+                                    </p>
+                                @elseif($item->status == 'shipped')
+                                    <p class="text-xs text-orange-500">
+                                        Sedang dalam perjalanan
+                                    </p>
+                                @elseif($item->status == 'completed')
+                                    <p class="text-xs text-orange-500">
+                                        pesanan selesai
+                                    </p>
+                                @endif
 
-                            <!-- Product -->
-                            <div class="flex items-center gap-3">
-                                {{-- <img src="https://via.placeholder.com/48"
-                                    class="w-12 h-12 rounded-lg object-cover border" />
-                                --}}
-                                <div class="flex-col gap-2">
-                                    <p class="text-sm font-medium leading-tight">
-                                        {{ $item->invoice }}
-                                    </p>
-                                    <p class="text-sm font-medium leading-tight">
-                                        Pembayaran : {{ $item->payment_method }}
-                                    </p>
-                                    <p class="text-sm font-medium leading-tight">
-                                        Tanggal : {{date_format($item->created_at, 'd M Y')  }}
-                                    </p>
-                                    {{-- <p class="text-xs text-gray-400">1x</p> --}}
-                                </div>
                             </div>
+                        </div>
 
-                            <!-- Footer -->
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-xs text-gray-400">Total pesanan</p>
-                                    <p class="text-sm font-semibold text-emerald-600">
-                                        Rp {{ number_format($item->total_price, 0, ',', '.') }}
-                                    </p>
-                                </div>
+                        <!-- Product -->
+                        <div class="flex items-center gap-3">
+                            {{-- <img src="https://via.placeholder.com/48" class="w-12 h-12 rounded-lg object-cover border" />
+                            --}}
+                            <div class="flex-col gap-2">
+                                <p class="text-sm font-medium leading-tight">
+                                    {{ $item->invoice }}
+                                </p>
+                                <p class="text-sm font-medium leading-tight">
+                                    Pembayaran : {{ $item->payment_method }}
+                                </p>
+                                <p class="text-sm font-medium leading-tight">
+                                    Tanggal : {{date_format($item->created_at, 'd M Y')  }}
+                                </p>
+                                {{-- <p class="text-xs text-gray-400">1x</p> --}}
+                            </div>
+                        </div>
+                        </a>
+                        <!-- Footer -->
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-400">Total pesanan</p>
+                                <p class="text-sm font-semibold text-emerald-600">
+                                    Rp {{ number_format($item->total_price, 0, ',', '.') }}
+                                </p>
+                            </div>
+                            @php
+                                $transaksi = optional($item->transaksi);
+                            @endphp
+                            @if($item->transaksi)
+                                @if (($item->status == 'processing') && ($item->transaksi->status == 'berhasil'))
+                                    <button class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Pesanan disiapkan
+                                    </button>
+                                @elseif($item->status == 'shipped' && $item->transaksi->status == 'berhasil')
+                                    <button class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Pesanan diatar
+                                    </button>
+                                @elseif($item->status == 'completed' && $item->transaksi->status == 'berhasil')
+                                    <button class="bg-[#0AA085] text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Pesanan telah sampai
+                                    </button>
+                                @elseif($item->transaksi->status == 'menunggu' && $item->payment_method == 'transfer')
+                                    <button type="submit" onclick="payWithSnap('{{ $item->transaksi->snap_token }}')"
+                                        class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Bayar
+                                    </button>
+                                @endif
+                            @else
                                 @if ($item->status == 'processing')
                                     <button class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
                                         Pesanan disiapkan
@@ -98,74 +121,99 @@
                                         Pesanan telah sampai
                                     </button>
                                 @endif
+                            @endif
+                            {{-- {{ dd($item->status) }} --}}
 
-                            </div>
+
                         </div>
-                    </a>
+                    </div>
+
                 @endforeach
             </div>
 
             {{-- ONGOIng --}}
             <div id="ongoing-section" class="flex flex-col gap-4 hidden">
                 @foreach ($ongoing as $item)
-                    <a href="">
-                        <div class="bg-white rounded-2xl p-4 shadow-sm space-y-4">
+                    <div class="bg-white rounded-2xl p-4 shadow-sm space-y-4">
 
-                            <!-- Store -->
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10  rounded-xl flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-[#0AA085]" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="font-semibold text-sm">Madinashop</p>
-                                    @if ($item->status == 'processing')
-                                        <p class="text-xs text-orange-500">
-                                            Sedang disiapkan
-                                        </p>
-                                    @elseif($item->status == 'shipped')
-                                        <p class="text-xs text-orange-500">
-                                            Sedang dalam perjalanan
-                                        </p>
-                                    @elseif($item->status == 'completed')
-                                        <p class="text-xs text-orange-500">
-                                            pesanan selesai
-                                        </p>
-                                    @endif
-
-                                </div>
+                        <!-- Store   -->
+                        <a href="{{ route('orders.show', $item->id) }}"></a>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10  rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-[#0AA085]" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                </svg>
                             </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-sm">Madinashop</p>
+                                @if ($item->status == 'processing')
+                                    <p class="text-xs text-orange-500">
+                                        Sedang disiapkan
+                                    </p>
+                                @elseif($item->status == 'shipped')
+                                    <p class="text-xs text-orange-500">
+                                        Sedang dalam perjalanan
+                                    </p>
+                                @elseif($item->status == 'completed')
+                                    <p class="text-xs text-orange-500">
+                                        pesanan selesai
+                                    </p>
+                                @endif
 
-                            <!-- Product -->
-                            <div class="flex items-center gap-3">
-                                {{-- <img src="https://via.placeholder.com/48"
-                                    class="w-12 h-12 rounded-lg object-cover border" />
-                                --}}
-                                <div class="flex-col gap-2">
-                                    <p class="text-sm font-medium leading-tight">
-                                        {{ $item->invoice }}
-                                    </p>
-                                    <p class="text-sm font-medium leading-tight">
-                                        Pembayaran : {{ $item->payment_method }}
-                                    </p>
-                                    <p class="text-sm font-medium leading-tight">
-                                        Tanggal : {{date_format($item->created_at, 'd M Y')  }}
-                                    </p>
-                                    {{-- <p class="text-xs text-gray-400">1x</p> --}}
-                                </div>
                             </div>
+                        </div>
 
-                            <!-- Footer -->
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-xs text-gray-400">Total pesanan</p>
-                                    <p class="text-sm font-semibold text-emerald-600">
-                                        Rp {{ number_format($item->total_price, 0, ',', '.') }}
-                                    </p>
-                                </div>
+                        <!-- Product -->
+                        <div class="flex items-center gap-3">
+                            {{-- <img src="https://via.placeholder.com/48" class="w-12 h-12 rounded-lg object-cover border" />
+                            --}}
+                            <div class="flex-col gap-2">
+                                <p class="text-sm font-medium leading-tight">
+                                    {{ $item->invoice }}
+                                </p>
+                                <p class="text-sm font-medium leading-tight">
+                                    Pembayaran : {{ $item->payment_method }}
+                                </p>
+                                <p class="text-sm font-medium leading-tight">
+                                    Tanggal : {{date_format($item->created_at, 'd M Y')  }}
+                                </p>
+                                {{-- <p class="text-xs text-gray-400">1x</p> --}}
+                            </div>
+                        </div>
+                        </a>
+                        <!-- Footer -->
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-400">Total pesanan</p>
+                                <p class="text-sm font-semibold text-emerald-600">
+                                    Rp {{ number_format($item->total_price, 0, ',', '.') }}
+                                </p>
+                            </div>
+                            @php
+                                $transaksi = optional($item->transaksi);
+                            @endphp
+                            @if($item->transaksi)
+                                @if (($item->status == 'processing') && ($item->transaksi->status == 'berhasil'))
+                                    <button class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Pesanan disiapkan
+                                    </button>
+                                @elseif($item->status == 'shipped' && $item->transaksi->status == 'berhasil')
+                                    <button class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Pesanan diatar
+                                    </button>
+                                @elseif($item->status == 'completed' && $item->transaksi->status == 'berhasil')
+                                    <button class="bg-[#0AA085] text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Pesanan telah sampai
+                                    </button>
+                                @elseif($item->transaksi->status == 'menunggu' && $item->payment_method == 'transfer')
+                                    <button type="submit" onclick="payWithSnap('{{ $item->transaksi->snap_token }}')"
+                                        class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Bayar
+                                    </button>
+                                @endif
+                            @else
                                 @if ($item->status == 'processing')
                                     <button class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
                                         Pesanan disiapkan
@@ -179,74 +227,98 @@
                                         Pesanan telah sampai
                                     </button>
                                 @endif
+                            @endif
+                            {{-- {{ dd($item->status) }} --}}
 
-                            </div>
+
                         </div>
-                    </a>
+                    </div>
                 @endforeach
             </div>
 
             {{-- selesai --}}
             <div id="history-section" class="flex flex-col gap-4 hidden">
                 @foreach ($history as $item)
-                    <a href="">
-                        <div class="bg-white rounded-2xl p-4 shadow-sm space-y-4">
+                    <div class="bg-white rounded-2xl p-4 shadow-sm space-y-4">
 
-                            <!-- Store -->
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10  rounded-xl flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-[#0AA085]" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                                    </svg>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="font-semibold text-sm">Madinashop</p>
-                                    @if ($item->status == 'processing')
-                                        <p class="text-xs text-orange-500">
-                                            Sedang disiapkan
-                                        </p>
-                                    @elseif($item->status == 'shipped')
-                                        <p class="text-xs text-orange-500">
-                                            Sedang dalam perjalanan
-                                        </p>
-                                    @elseif($item->status == 'completed')
-                                        <p class="text-xs text-orange-500">
-                                            pesanan selesai
-                                        </p>
-                                    @endif
-
-                                </div>
+                        <!-- Store   -->
+                        <a href="{{ route('orders.show', $item->id) }}"></a>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10  rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-[#0AA085]" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                </svg>
                             </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-sm">Madinashop</p>
+                                @if ($item->status == 'processing')
+                                    <p class="text-xs text-orange-500">
+                                        Sedang disiapkan
+                                    </p>
+                                @elseif($item->status == 'shipped')
+                                    <p class="text-xs text-orange-500">
+                                        Sedang dalam perjalanan
+                                    </p>
+                                @elseif($item->status == 'completed')
+                                    <p class="text-xs text-orange-500">
+                                        pesanan selesai
+                                    </p>
+                                @endif
 
-                            <!-- Product -->
-                            <div class="flex items-center gap-3">
-                                {{-- <img src="https://via.placeholder.com/48"
-                                    class="w-12 h-12 rounded-lg object-cover border" />
-                                --}}
-                                <div class="flex-col gap-2">
-                                    <p class="text-sm font-medium leading-tight">
-                                        {{ $item->invoice }}
-                                    </p>
-                                    <p class="text-sm font-medium leading-tight">
-                                        Pembayaran : {{ $item->payment_method }}
-                                    </p>
-                                    <p class="text-sm font-medium leading-tight">
-                                        Tanggal : {{date_format($item->created_at, 'd M Y')  }}
-                                    </p>
-                                    {{-- <p class="text-xs text-gray-400">1x</p> --}}
-                                </div>
                             </div>
+                        </div>
 
-                            <!-- Footer -->
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-xs text-gray-400">Total pesanan</p>
-                                    <p class="text-sm font-semibold text-emerald-600">
-                                        Rp {{ number_format($item->total_price, 0, ',', '.') }}
-                                    </p>
-                                </div>
+                        <!-- Product -->
+                        <div class="flex items-center gap-3">
+                            {{-- <img src="https://via.placeholder.com/48" class="w-12 h-12 rounded-lg object-cover border" />
+                            --}}
+                            <div class="flex-col gap-2">
+                                <p class="text-sm font-medium leading-tight">
+                                    {{ $item->invoice }}
+                                </p>
+                                <p class="text-sm font-medium leading-tight">
+                                    Pembayaran : {{ $item->payment_method }}
+                                </p>
+                                <p class="text-sm font-medium leading-tight">
+                                    Tanggal : {{date_format($item->created_at, 'd M Y')  }}
+                                </p>
+                                {{-- <p class="text-xs text-gray-400">1x</p> --}}
+                            </div>
+                        </div>
+                        </a>
+                        <!-- Footer -->
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-gray-400">Total pesanan</p>
+                                <p class="text-sm font-semibold text-emerald-600">
+                                    Rp {{ number_format($item->total_price, 0, ',', '.') }}
+                                </p>
+                            </div>
+                            @php
+                                $transaksi = optional($item->transaksi);
+                            @endphp
+                            @if($item->transaksi)
+                                @if (($item->status == 'processing') && ($item->transaksi->status == 'berhasil'))
+                                    <button class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Pesanan disiapkan
+                                    </button>
+                                @elseif($item->status == 'shipped' && $item->transaksi->status == 'berhasil')
+                                    <button class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Pesanan diatar
+                                    </button>
+                                @elseif($item->status == 'completed' && $item->transaksi->status == 'berhasil')
+                                    <button class="bg-[#0AA085] text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Pesanan telah sampai
+                                    </button>
+                                @elseif($item->transaksi->status == 'menunggu' && $item->payment_method == 'transfer')
+                                    <button type="submit" onclick="payWithSnap('{{ $item->transaksi->snap_token }}')"
+                                        class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
+                                        Bayar
+                                    </button>
+                                @endif
+                            @else
                                 @if ($item->status == 'processing')
                                     <button class="bg-orange-500 text-white text-sm px-4 py-2 rounded-full font-medium">
                                         Pesanan disiapkan
@@ -260,14 +332,40 @@
                                         Pesanan telah sampai
                                     </button>
                                 @endif
-
-                            </div>
+                            @endif
+                            {{-- {{ dd($item->status) }} --}}
                         </div>
-                    </a>
+                    </div>
                 @endforeach
             </div>
 
         </div>
+        {{-- @if(isset($snapToken)) --}}
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
+        <script type="text/javascript">
+
+            function payWithSnap(snapToken) {
+                snap.pay(snapToken, {
+                    onSuccess: function (result) {
+                        // Redirect setelah sukses
+                        // Livewire.dispatch('berhasil');
+                        window.location.href = "{{ route('order.success') }}";
+                    },
+                    onPending: function (result) {
+                        // Redirect juga jika pending
+                        window.location.href = "{{ route('customer.orders') }}";
+
+                    },
+                    onError: function (result) {
+                        window.location.href = "{{ route('customer.orders') }}";
+                        alert("transaksi gagal silahkan pesan ulang.");
+
+                    }
+                });
+            };
+        </script>
+        {{-- @endif --}}
         <script>
             const btnOngoing = document.getElementById('btn-ongoing');
             const btnHistory = document.getElementById('btn-history');

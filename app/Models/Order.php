@@ -30,6 +30,10 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+    public function transaksi()
+    {
+        return $this->hasOne(transaksi::class, 'order_id');
+    }
 
     protected static function booted()
     {

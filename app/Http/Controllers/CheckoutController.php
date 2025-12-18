@@ -126,23 +126,63 @@ class CheckoutController extends Controller
             // $transaksi->status = 'menunggu';
             // $transaksi->snap_token = $snapToken;
             // $transaksi->save();
-            Cart::where('customer_id', $customerId)->delete();
+            // Cart::where('customer_id', $customerId)->delete();
             return view('checkout.index', compact('snapToken', 'cartItems', 'total'));
             // $transaksi->order_id = 
         }
 
-        
+
         transaksi::create([
-                'customer_id' => $customerId,
-                'order_id' => $order->id,
-                'status' => 'menunggu',
-                'snap_token' => null,
-            ]);
-
+            'customer_id' => $customerId,
+            'order_id' => $order->id,
+            'status' => 'menunggu',
+            'snap_token' => null,
+        ]);
         // kosongkan cart customer
-        Cart::where('customer_id', $customerId)->delete();
-
+        // Cart::where('customer_id', $customerId)->delete();
         return redirect()->route('order.success')
             ->with('success', 'Pesanan berhasil dibuat!');
+    }
+
+    public function handleMidtransCallback(Request $request)
+    {
+        $serverKey = config('midtrans.serverKey'); // Ambil dari config
+
+        $data = $request->all();
+
+        // Hitung signature_key berdasarkan dokumentasi Midtrans
+        $expectedSignature = hash(
+            'sha512',
+            $data['order_id'] .
+                $data['status_code'] .
+                $data['gross_amount'] .
+                $serverKey
+        );
+
+        if ($data['signature_key'] !== $expectedSignature) {
+            return response()->json(['message' => 'Invalid signature'], 403);
+        }
+
+        // Proses status transaksi setelah valid
+        $orderId = explode('-', $data['order_id'])[1];
+        $transaksi = transaksi::where('order_id', $orderId)->first();
+
+        if (!$transaksi) {
+            return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
+        }
+
+        $transactionStatus = $data['transaction_status'];
+
+        if ($transactionStatus === 'settlement') {
+            $transaksi->status = 'berhasil';
+        } elseif ($transactionStatus === 'pending') {
+            $transaksi->status = 'menunggu';
+        } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
+            $transaksi->status = 'dibatalkan';
+        }
+
+        $transaksi->save();
+
+        return response()->json(['message' => 'Notifikasi berhasil diproses']);
     }
 }

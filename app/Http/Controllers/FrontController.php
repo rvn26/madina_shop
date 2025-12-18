@@ -41,9 +41,9 @@ class FrontController extends Controller
     public function produk(Product $product)
     {
         $data = $this->frontService->getFrontPageData();
-        $populerproduk = Product::where('is_popular','like',1)->latest()->get();
+        $populerproduk = Product::where('is_popular', 'like', 1)->latest()->get();
         // dd($populerproduk);
-        return view('front.produk', $data,compact('populerproduk'));
+        return view('front.produk', $data, compact('populerproduk'));
     }
     public function allcategory(Product $product)
     {
@@ -84,6 +84,17 @@ class FrontController extends Controller
         }
 
         return back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
+    }
+
+    public function order_success()
+    {
+        $cart = Cart::where('customer_id', auth()->id())
+            ->first();
+        if(empty($cart)){
+            return redirect()->route('front.index')->with('error','tidak ada produk yang dibeli');
+        }
+        $cart->delete();
+        return view('front.orders.ordersukses',compact('cart'));
     }
 
     public function cart()
